@@ -1,0 +1,317 @@
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.module.Module;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.GameOverSubState;
+import funkin.play.PlayState;
+import flixel.FlxG;
+
+import funkin.Conductor;
+
+
+/*
+______         _   _                        ______ 
+| ___ \       | | | |                       | ___ \
+| |_/ /_   _  | | | | __ _ _ __  _   _  __ _| |_/ /
+| ___ \ | | | | | | |/ _` | '_ \| | | |/ _` | ___ \
+| |_/ / |_| | \ \_/ / (_| | | | | |_| | (_| | |_/ /
+\____/ \__, |  \___/ \__,_|_| |_|\__, |\__,_\____/ 
+        __/ |                     __/ |            
+       |___/                     |___/             
+
+                Discord - vanyab
+                
+v 1.2.5
+It's my first time coding in Haxe, s0rгy 4 Eяя0яs.
+
+[<-- About -->]
+This event will make using camera a lot easier.
+Just elect character you want to follow, add offsets to the camera if needed and have a nice day.
+
+[<-- stuff -->]
+Target - Boyfriend, Girlfriend, Opponent or Custom Camera Position.
+Follow Character - if true, camera will ALWAYS follow character's position.
+Follow Notes - if true, camera will move with notes.
+Note Offset - how far camera will move on note press [for option above].
+X Position - If the "User Position" is selected, the camera will be set where you specified, otherwise the X offset for the character camera will be added.
+Y Position - If the "User Position" is selected, the camera will be set where you specified, otherwise the Y offset for the character camera will be added.
+
+[<-- Versions -->]
+[1.1.5] -- Private Release
+-- XPos and YPos now can add offset to the camera while switching to the character.
+*- Added "Follow Character" option.
+
+[1.2.5] -- Public Release
+*- Added "Follow Notes" option 
+
+[1.3]
+*- Fixed crash when dying
+
+[1.4]
+*- Fixed StoryMenu camera
+
+[<-- Future -->]
+Will be added ability to change camera speed movement.
+
+
+ __      __  _____ __________  _______  .___ _______    ________ 
+/  \    /  \/  _  \\______   \ \      \ |   |\      \  /  _____/ 
+\   \/\/   /  /_\  \|       _/ /   |   \|   |/   |   \/   \  ___ 
+ \        /    |    \    |   \/    |    \   /    |    \    \_\  \
+  \__/\  /\____|__  /____|_  /\____|__  /___\____|__  /\______  /
+       \/         \/       \/         \/            \/        \/ 
+
+    If 'Follow Character' is enabled, regular 'Focus Camera' will NO LONGER WORK,
+    Place this event with disabled 'Follow Character' option to fix that.
+
+
+*/
+
+
+class CameraFollowEvent extends ScriptedSongEvent{
+
+    // var dataValue;
+   static var BF = 'bf';
+   static var DAD = 'dad';
+   static var GF = 'gf';
+   static var other = 'other';
+
+    /*
+     * Future me, redo this with numbers instead of names
+     */
+
+    public function new() {
+		super('camBetter');
+	}
+
+    public function getIconPath():String
+    {
+        // Icon Path
+        return 'ui/chart-editor/events/camBetter';
+    }
+
+    public function getTitle():String
+        {
+            // Chart Editor Name Title
+            return "Camera Follow ++";
+        }
+
+    function getEventSchema() {
+        // Ваня, сделай через мапу, будет проще
+        var options = ["Player" => BF, "Opponent" => DAD, "Girlfriend" => GF, "Custom Pos" => other];
+		return [
+			{
+				name: "char",
+				title: "Target",
+				type: "enum",
+				defaultValue: BF,
+				keys: options,
+			},
+            {
+				name: "focused",
+				title: "Follow Character",
+				type: "bool",
+				defaultValue: false,
+			},
+            {
+				name: "noteFollow",
+				title: "Follow Notes",
+				type: "bool",
+				defaultValue: false,
+			},
+            {
+				name: "noteOffset",
+				title: "Note Offset",
+				type: "float",
+				defaultValue: 30.0,
+                step: 10.0,
+                units: "px"
+			}
+            {
+				name: "xPos",
+				title: "X position",
+				type: "float",
+				defaultValue: 0,
+                step: 10.0,
+                units: "px"
+			},
+            {
+				name: "yPos",
+				title: "Y position",
+				type: "float",
+				defaultValue: 0,
+                step: 10.0,
+                units: "px"
+			}         
+		];
+	}
+
+    var game = PlayState.instance;
+
+    function handleEvent(data) {
+        // Если мы не на Уровне // сцена не существует - вернуть нифига
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+        if (PlayState.instance.isMinimalMode) return; // шифт ентер фигня, тоже стопаем
+
+        if (data.value != null){ //
+            ModuleHandler.getModule('cameraUpdateClass').scriptCall('changeCamera', [null]); // scratch previous stuff
+            var dataValue:Dynamic = data.value; 
+            FlxG.camera.target = PlayState.instance.cameraFollowPoint; //yes
+            if (dataValue.char != other){
+                ModuleHandler.getModule('cameraUpdateClass').scriptCall('changeCamera', [dataValue.char, dataValue.noteFollow, dataValue.noteOffset, dataValue.focused,dataValue.xPos, dataValue.yPos]);
+            // it's working, hooray
+            }else{
+                PlayState.instance.cameraFollowPoint.setPosition(dataValue.xPos, dataValue.yPos);
+            }
+        }
+	}
+    
+    
+ }
+
+class cameraUpdateClass extends Module{
+    // yes
+    public function new() {
+		super('cameraUpdateClass');
+	}
+    var game = PlayState.instance;
+    var curFollow:String = null;
+    var followCharacter:Bool = false;
+
+    var nFollow:Bool = false;
+    var nOffset:Float = 0;
+
+    var xOffset:Float = 0.0;
+    var yOffset:Float = 0.0;
+
+    var prevFollow = curFollow;
+
+   // var speed = 4;
+
+    function onStateChangeEnd(event){
+        super.onStateChangeEnd(event);
+    }
+
+    function changeCamera(char:String, noteFollow:Bool, noteOffset:Float, follow:Bool, xV:Float = 0.0, yV:Float = 0.0){
+        resetCamSys();
+        curFollow = char;
+        followCharacter = follow;
+
+        xOffset = xV;
+        yOffset = yV;
+
+        nFollow = noteFollow;
+        nOffset = noteOffset;
+
+        prevFollow = curFollow;
+
+    }
+
+    function onUpdate(event){
+        super.onUpdate(event);
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+        if (PlayState.instance.isMinimalMode) return;
+        if (GameOverSubState.instance != null) return;
+        if (curFollow != null){
+            switch(curFollow){
+                case 'bf':
+                    PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x + xOffset, PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y + yOffset);              
+                case 'gf':
+                    //PlayState.instance.tweenCameraToPosition(PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x + xOffset, PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y + yOffset, speed, "CLASSIC"); 
+                    PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x + xOffset, PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y + yOffset);
+                case 'dad':
+                    //PlayState.instance.tweenCameraToPosition(PlayState.instance.currentStage.getOpponent().cameraFocusPoint.x + xOffset, PlayState.instance.currentStage.getOpponent().cameraFocusPoint.y + yOffset, speed, "CLASSIC"); 
+                    PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getOpponent().cameraFocusPoint.x + xOffset, PlayState.instance.currentStage.getOpponent().cameraFocusPoint.y + yOffset);
+            }
+            if (!followCharacter) curFollow = null;
+            // IT'S WORKING, LESS GOOOOOOO
+        }
+
+        // NOTES MOVEMENT WORKING YAYAYAYASYYDASDASYDGASVDASMGDASGDMKSAHGDJHKASGDJASHKDGJA 
+        // УРАА БЯЬЛЯЯЯЯТЬ
+
+        if (nFollow){
+            switch(prevFollow){
+                case 'dad':
+                    if (PlayState.instance.currentStage.getOpponent().getCurrentAnimation() == "idle"){
+                        FlxG.camera.targetOffset.x = 0;
+                        FlxG.camera.targetOffset.y = 0;
+                    }
+                case 'bf':
+                    if (PlayState.instance.currentStage.getBoyfriend().getCurrentAnimation() == "idle"){
+                        FlxG.camera.targetOffset.x = 0;
+                        FlxG.camera.targetOffset.y = 0;
+                    }
+                default:
+                    FlxG.camera.targetOffset.x = 0;
+                    FlxG.camera.targetOffset.y = 0;
+            }
+        }
+    }
+
+    function onNoteHit(ev){
+        super.onNoteHit(ev);
+
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+        if (PlayState.instance.isMinimalMode) return;
+
+        
+        if (nFollow){
+            switch(prevFollow){
+                case 'dad':
+                    if (PlayState.instance.opponentStrumline == null || (ev.note.noteData.getMustHitNote())) return;
+                case 'bf':
+                    if (PlayState.instance.playerStrumline == null || (!ev.note.noteData.getMustHitNote())) return;
+                default:
+                    return;             
+            }
+            FlxG.camera.targetOffset.set(0,0);
+
+            switch(ev.note.direction)
+            {
+                case 0:
+                    FlxG.camera.targetOffset.x = -nOffset;
+                case 1:
+                    FlxG.camera.targetOffset.y = nOffset;
+                case 2:
+                    FlxG.camera.targetOffset.y = -nOffset;
+                case 3:
+                    FlxG.camera.targetOffset.x = nOffset;
+            }
+        }
+    }
+
+    function onDestroy(event){
+        super.onDestroy(event);
+        resetCamSys();
+    }
+
+    function onSongLoaded(){
+        super.onSongLoaded();
+        
+        resetCamSys();
+        // yes
+    }
+
+    function onSongEvent(ev){
+        super.onSongEvent(ev);
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+        if (PlayState.instance.isMinimalMode) return;
+    }
+
+    function resetCamSys(){
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+        if (PlayState.instance.isMinimalMode) return;
+
+        curFollow = null;
+        FlxG.camera.targetOffset.set();
+
+        followCharacter = false;
+
+        nFollow = false;
+        nOffset = 0;
+
+        xOffset = 0;
+        yOffset = 0;
+    }
+
+}

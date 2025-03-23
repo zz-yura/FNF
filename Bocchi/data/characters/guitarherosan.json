@@ -1,0 +1,67 @@
+{
+    "version": "1.0.0",
+    "name": "Guitarherosan",
+    "assetPath": "characters/guitarherosan",
+    "singTime": 4,
+    "isPixel": false,
+    "scale": 1,
+    "healthIcon": {
+        "id": "bocchi",
+        "isPixel": false,
+        "flipX": false,
+        "scale": 1
+    },
+    "animations": [
+        {
+            "name": "idle",
+            "prefix": "idle",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singLEFT",
+            "prefix": "left",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 30,
+            "frameIndices": []
+        },
+        {
+            "name": "singDOWN",
+            "prefix": "down",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 30,
+            "frameIndices": []
+        },
+        {
+            "name": "singUP",
+            "prefix": "up",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 30,
+            "frameIndices": []
+        },
+        {
+            "name": "singRIGHT",
+            "prefix": "right",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 30,
+            "frameIndices": []
+        }
+    ],
+    "flipX": false
+}

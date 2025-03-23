@@ -1,0 +1,18 @@
+{
+    "title": "Bocchi",
+    "description": "A oneshot mod where BF sings against Hitori Gotou, but she's too nervous, so now it's your job to sing the confidence out of her.",
+ "contributors": [{
+    "name": "zz.yura",
+    "role": "Porter",
+    "url": "https://gamebanana.com/members/2617759"
+  },
+  {
+    "name": "Chriswell",
+    "role": "Author of original mod",
+    "url": "https://gamebanana.com/members/2617759"
+  }
+],
+    "api_version": "0.5.0",
+    "mod_version": "1.2.0",
+    "license": "Apache-2.0"
+}

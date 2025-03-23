@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "name": "hitori gotou",
+    "titleAsset": "storymenu/titles/bocchi",
+    "props": [ {
+      "assetPath": "storymenu/props/bocchithecock",
+      "scale": 0.45,
+      "danceEvery": 1,
+      "offsets": [-150, -237],
+      "animations": [ ]}],
+    "background": "#FFB2E1",
+    "songs": [
+        "confidence"
+    ]
+}

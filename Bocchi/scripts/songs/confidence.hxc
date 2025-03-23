@@ -1,0 +1,48 @@
+import funkin.graphics.FunkinSprite;
+import funkin.Paths;
+import funkin.play.character.CharacterDataParser;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+
+class confidenceSong extends Song {
+    public function new() {
+        super('confidence');
+    }
+
+function onSongLoaded(event:SongLoadScriptEvent):Void {
+		super.onSongLoaded(event);
+bgLights = new FunkinSprite(0, 0);
+bgLights.loadGraphic(Paths.image("stagelights"), false, 0, 0);
+bgLights.setPosition(-430.0, -870.0);
+bgLights.zIndex = 302;
+bgLights.alpha = 0;
+PlayState.instance.add(bgLights);
+    }
+
+function onStepHit(event:SongTimeScriptEvent) {
+    super.onStepHit(event);
+
+        switch (event.step) {
+        
+			case 657:
+PlayState.instance.camGame.flash(0xFFFFFFFF, 1);
+bgLights.alpha = 1;
+PlayState.instance.currentStage.getDad().destroy();
+PlayState.instance.currentStage.addCharacter(CharacterDataParser.fetchCharacter("guitarherosan"), CharacterType.DAD);
+        }
+    }
+
+function onSongRetry(event) {
+    super.onSongRetry(event);
+
+PlayState.instance.remove(bgLights);
+PlayState.instance.currentStage.getDad().destroy();
+PlayState.instance.currentStage.addCharacter(CharacterDataParser.fetchCharacter("bocchi"), CharacterType.DAD);
+    }
+
+	function onGameOver(event:ScriptEvent):Void {
+PlayState.instance.remove(bgLights);
+PlayState.instance.refresh();
+    }
+}
