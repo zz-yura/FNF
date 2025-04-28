@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="Bocchi-text.png" width="400" height="132">
+	<SubTexture name="switch0001" x="1" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="switch0002" x="1" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="switch0003" x="1" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="switch0004" x="1" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="idle0001" x="201" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="idle0002" x="201" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="idle0003" x="201" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+	<SubTexture name="idle0004" x="201" y="1" width="198" height="130" frameX="-8" frameY="-3" frameWidth="210" frameHeight="133"/>
+</TextureAtlas>
